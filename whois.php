@@ -34,7 +34,11 @@ class whois{
     function getDomainWhois($result,$domain){
         $fp = fsockopen($result, 43, $errno, $errstr, 30);
         if (!$fp) {
+            echo $result."<br />\n";
+            echo $domain;
+            echo "<br /> \n";
             echo "$errstr ($errno)<br />\n";
+            die();
         } else {
             $out = $domain."\r\n";
             fwrite($fp, $out);
