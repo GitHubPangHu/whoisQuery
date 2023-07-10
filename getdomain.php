@@ -1,10 +1,13 @@
 <?php
 require 'whois.php';
-$domain = $_POST['domain'];
 
-$a = new whois();
-$whois = $a->test($domain);
-//得到的是一个素组，遍历出来，如果需要单个显示，则用$whois[i]方式单条显示
-foreach ($whois as $a){
-    echo $a;
-}
+// 允许所有源发起的跨域请求
+//如果自己使用，最好设置好允许的请求域名，防止盗用
+header('Access-Control-Allow-Origin: *');
+// 允许特定的 HTTP 方法
+header('Access-Control-Allow-Methods: POST');
+
+$domain = $_POST['domain'];
+$whoisQuery = new Whois();
+$whois = $whoisQuery->query($domain);
+echo json_encode($whois);

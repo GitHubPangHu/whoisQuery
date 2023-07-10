@@ -3,13 +3,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>domain</title>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <title>whois_domain</title>
 </head>
 <body>
-<form action='getdomain.php' method='post'>
-    <input type='text' name='domain'/>
-    <input type='submit' value='查询'/>
+<!--<form action='getdomain.php' method='post'>-->
+<form >
+    <input type='text' id="input"  name='domain'/>
+    <input type='button' id="query" value='查询'/>
 </form>
+<div id="put">
 
+</div>
+<script>
+
+    $(document).ready(function(){
+        $("#query").click(function(){
+            var getDomain = $('#input').val();
+            var datas = {
+                domain:getDomain
+            };
+
+            $.ajax({
+                url:"getdomain.php",
+                type:"post",
+                data: datas,
+                success:function(result){
+                    result = JSON.parse(result).join("<br>");//json转换成对象/数组，然后连接成字符串
+                    console.log(result);
+                    $("#put").html(result);
+                }});
+        });
+    });
+</script>
 </body>
 </html>

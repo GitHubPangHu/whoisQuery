@@ -1,7 +1,11 @@
 <?php
-class whois{
-//获取whois地址页面
-    function getWhoisAddress($suffix){
+class Whois{
+    /**
+     * @param String $suffix 域名后缀
+     * @return bool|string 返回注册局信息
+     * 通过域名后缀找到对应注册局的信息
+     */
+    private function getWhoisAddress(String $suffix){
         $curl = curl_init();
         $url = "https://www.iana.org/whois?q=".$suffix;
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -19,8 +23,21 @@ class whois{
         curl_close($curl);
         return $data;
     }
-    //截取whois地址
-    function intercept($original_string){
+
+    /**
+     * @param string $original_string 注册局信息
+     * @return string 返回whois查询地址
+     * 从注册局信息中截取whois查询地址，并返回
+     */
+    private function intercept(string $original_string){
+        //判断是否是没有的后缀
+        $noWhois = "This query returned 0 objects.";
+        $bool = strpos($original_string,$noWhois);
+        if ($bool !== false){
+            echo "暂不支持此后缀或者无此后缀域名！";
+            die();
+        }
+
         $start_character = "whois:";
         $end_character = "status";
         $start_pos = strpos($original_string, $start_character);
@@ -30,36 +47,45 @@ class whois{
         $result = trim($result);
         return $result;
     }
-    //getDomainWhois 获取域名的whois
-    function getDomainWhois($result,$domain){
-        $fp = fsockopen($result, 43, $errno, $errstr, 30);
+
+    /**
+     * @param string $whoisServiceAddress whois服务器地址
+     * @param string $domain 要查询的域名
+     * @return array|void whois查询到的信息
+     */
+    private function getDomainWhois(string $whoisServiceAddress,string $domain){
+        $fp = fsockopen($whoisServiceAddress, 43, $errno, $errstr, 30);
         if (!$fp) {
-            echo $result."<br />\n";
+            echo $whoisServiceAddress."<br />\n";
             echo $domain;
             echo "<br /> \n";
             echo "$errstr ($errno)<br />\n";
             die();
         } else {
+            $domain = idn_to_ascii($domain);// 将域名转换为 IDNA ASCII 格式
             $out = $domain."\r\n";
             fwrite($fp, $out);
-            $whoisInformation[]="";
+            $whoisInformation[] ="";// array();
             while (!feof($fp)) {
-                echo "<pre>";
                  $whoisInformation[] .= fgets($fp);
             }
-
             fclose($fp);
+
+            //判断是否是IDN域名，如果是的则在第一个数组处加上他的IDN域名
+            $bool = strpos($domain,"xn--");
+            if ($bool !== false){
+                $whoisInformation[0] = "IDN域名：".idn_to_utf8($domain);
+            }
             return $whoisInformation;
         }
 
     }
 
-    function test($domain){
+    public function query($domain){
        $suffix = ltrim(strstr( $domain, '.'),".");
-
         $data = $this->getWhoisAddress($suffix);
-        $result = $this->intercept($data);
-        $whois = $this->getDomainWhois($result,$domain);
+        $whoisServiceAddress = $this->intercept($data);
+        $whois = $this->getDomainWhois($whoisServiceAddress,$domain);
         return $whois;
     }
 }
