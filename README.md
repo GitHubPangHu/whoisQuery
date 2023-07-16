@@ -14,4 +14,32 @@ php的代码运行方法很简单。
 
 需要开启intl、curl扩展。
 
-2023-7-11 胖虎
+data.json文件中的几个对象代表的意思，如果查询时候没有显示信息，则是data.json文件中没有那个字符串，自己对应加上即可。或者提交给我域名后缀！
+
+domain   							域名
+
+domainCode  					域名代码
+
+CreationDate 					创建日期
+
+ExpiryDate						到期时间
+
+UpdatedDate					更新时间
+
+SponsoringRegistrar		注册商
+
+RegistrarURL 					服务商网址
+
+Registrant   						注册人
+
+DomainStatus					域名状态
+
+DNS 								dns服务器
+
+DNSSEC
+
+RegistrantContactEmail   注册人邮箱
+
+unregistered  					未注册
+
+2023-7-17 胖虎
