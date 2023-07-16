@@ -200,41 +200,6 @@
             document.getElementsByClassName("domainCode")[0].style.display = "none";
 
         }
-
-
-        return;
-
-        getName = {
-            "domain":"域名",
-            "domainCode":"域名代码",
-            "CreationDate":"创建日期",
-            "ExpiryDate":"到期时间",
-            "UpdatedDate":"更新时间",
-            "SponsoringRegistrar":"注册商",
-            "RegistrarURL":"注册商网址",
-            "Registrant":"注册人",
-            "DomainStatus":"域名状态",
-            "DNS":"DNS服务器",
-            "RegistrantContactEmail":"注册人邮箱"
-        };
-        var data="";
-        for (var key in result.main){
-                if (result.main[key] === "404" ||result.main[key] == "")
-                    continue;
-                    name = getName[key]!==undefined?getName[key]:key;
-                data = data + name+ ":" + result.main[key] + "<br>";
-
-            // data = data +result.main[key] + "<br>";
-            // data +=  key + "<br>";
-        }
-        //如果不是IDN域名则把域名代码隐藏
-        if (result.main.domain === result.main.domainCode){
-
-        }
-        $("#put").html( data+ "<br>" +
-            result.whois + "<br>");
-
-        return;
     }
     });
 </script>
