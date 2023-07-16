@@ -3,17 +3,92 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+   <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
     <title>whois_domain</title>
+    <style>
+        /* 设置整体样式 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* 设置搜索框样式 */
+        .search-box {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* 设置查询结果样式 */
+        .query-results {
+            margin-top: 20px;
+            width: 80%;
+        }
+
+        /* 设置表单样式 */
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 200px;
+        }
+
+        input[type="button"] {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* 设置表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+
+
+        tr.DomainStatus td {
+            color: red;
+        }
+
+        tr.DNSSEC td {
+            color: green;
+        }
+        caption {
+            font-size: calc(1vw + 1vh + 1vmin); /* 初始字体大小为视窗宽度的 3% 加上 10px */
+        }
+    </style>
 </head>
 <body>
 <!--<form action='getdomain.php' method='post'>-->
-<form >
+<form class="search-box">
     <input type='text' id="input"  name='domain'/>
     <input type='button' id="query" value='查询'/>
 </form>
-<div id="put">
-
+<div id="put" class="query-results">
 </div>
 <script>
 
@@ -25,15 +100,142 @@
             };
 
             $.ajax({
-                url:"getdomain.php",
+                url:"whois.php",
                 type:"post",
                 data: datas,
                 success:function(result){
-                    result = JSON.parse(result).join("<br>");//json转换成对象/数组，然后连接成字符串
-                    console.log(result);
-                    $("#put").html(result);
+
+                    result = JSON.parse(result);
+                    //返回不是1，就输出相应的错误，正确就输出
+                    if (result.result !== "200" && result.result != null){
+                        alert(result.result);
+                        return;
+                    }else if (result.unregistered == "未注册"){
+                        alert(result.unregistered);
+                        return;
+                    }
+                    whoisPrint(result);
                 }});
-        });
+
+
+    });
+
+    function whoisPrint(result){
+
+
+        getName = {
+            "domain":"域名",
+            "domainCode":"域名代码",
+            "CreationDate":"创建日期",
+            "ExpiryDate":"到期时间",
+            "UpdatedDate":"更新时间",
+            "SponsoringRegistrar":"注册商",
+            "RegistrarURL":"注册商网址",
+            "Registrant":"注册人",
+            "DomainStatus":"域名状态",
+            "DNS":"DNS服务器",
+            "RegistrantContactEmail":"注册人邮箱"
+        };
+
+        const infoContainer = document.getElementById('put');
+        infoContainer.innerHTML = '';
+        // 创建单个信息标签的容器
+        const singleInfoContainer = document.createElement('div');
+
+        // 创建表格元素
+        const table = document.createElement('table');
+
+        table.classList.add('info-table');
+        const caption = document.createElement('caption');
+        caption.innerHTML = "以下内容仅供参考，详情看最底下的原始whois信息";
+        table.appendChild(caption);
+        for (var key in result.main) {
+
+            if (result.main[key] === "404" || result.main[key] == "")
+                continue;
+            name = getName[key] !== undefined ? getName[key] : key;
+
+            // 创建并设置域名标签
+            const row = document.createElement('tr');
+            row.classList.add(key);
+            const domainLabel = document.createElement('th');
+            domainLabel.innerHTML = name;
+            row.appendChild(domainLabel);
+
+            const domainValue = document.createElement('td');
+            domainValue.innerHTML = result.main[key];
+            row.appendChild(domainValue);
+
+            // 将行添加到表格中
+            table.appendChild(row);
+        }
+
+
+
+
+
+        // 创建并设置域名标签
+        const row = document.createElement('tr');
+        row.classList.add(key);
+        const domainLabel = document.createElement('th');
+        domainLabel.innerHTML = "whois原始信息";
+        row.appendChild(domainLabel);
+
+        const domainValue = document.createElement('td');
+        domainValue.innerHTML = result.whois;
+        row.appendChild(domainValue);
+
+        // 将行添加到表格中
+        table.appendChild(row);
+
+
+
+// 将表格添加到单个信息标签容器中
+        singleInfoContainer.appendChild(table);
+
+// 将单个信息标签容器添加到信息容器中
+        infoContainer.appendChild(singleInfoContainer);
+
+        if (result.main.domain === result.main.domainCode){
+            document.getElementsByClassName("domainCode")[0].style.display = "none";
+
+        }
+
+
+        return;
+
+        getName = {
+            "domain":"域名",
+            "domainCode":"域名代码",
+            "CreationDate":"创建日期",
+            "ExpiryDate":"到期时间",
+            "UpdatedDate":"更新时间",
+            "SponsoringRegistrar":"注册商",
+            "RegistrarURL":"注册商网址",
+            "Registrant":"注册人",
+            "DomainStatus":"域名状态",
+            "DNS":"DNS服务器",
+            "RegistrantContactEmail":"注册人邮箱"
+        };
+        var data="";
+        for (var key in result.main){
+                if (result.main[key] === "404" ||result.main[key] == "")
+                    continue;
+                    name = getName[key]!==undefined?getName[key]:key;
+                data = data + name+ ":" + result.main[key] + "<br>";
+
+            // data = data +result.main[key] + "<br>";
+            // data +=  key + "<br>";
+        }
+        //如果不是IDN域名则把域名代码隐藏
+        if (result.main.domain === result.main.domainCode){
+
+        }
+        $("#put").html( data+ "<br>" +
+            result.whois + "<br>");
+
+        return;
+    }
     });
 </script>
 </body>
