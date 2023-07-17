@@ -2,6 +2,8 @@
 
 whois查询，可以查询任意后缀域名。
 
+这个是单个域名查询，如需多域名查询请下载BatchQuery文件夹，BatchQuery文件夹内的是批量查询代码。
+
 使用方法：
 
 下载代码，运行index.html页面，输入域名查询即可，临时写的，没写批量查询等等。
@@ -30,4 +32,7 @@ DNSSEC
 RegistrantContactEmail   注册人邮箱
 unregistered             未注册
 ```
-2023-7-17 胖虎
+更新：2023-7-18 胖虎
+
+单个查询图
+![](https://cdnjson.com/images/2023/07/18/whois.png)
