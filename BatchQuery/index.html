@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.staticfile.org/jquery/3.6.0/jquery.min.js"></script>
+    <title>whois_domain</title>
+    <style>
+        /* 设置整体样式 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 设置搜索框样式 */
+        .search-box {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* 设置查询结果样式 */
+        .query-results {
+            margin-top: 20px;
+            width: 80%;
+        }
+
+        /* 设置表单样式 */
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 80%;
+            max-width: 200px;
+        }
+
+        input[type="button"] {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* 设置表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+
+        tr.DomainStatus td {
+            color: red;
+        }
+
+        tr.DNSSEC td {
+            color: green;
+        }
+
+        caption {
+            font-size: calc(1vw + 1vh + 1vmin);
+        }
+
+        /* 加载动画样式 */
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #007bff;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 隐藏加载动画 */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<form class="search-box">
+    <div style="display: flex; align-items: center;">
+        <textarea class="duo " id="input" type="text" name="domain" placeholder="输入域名"></textarea>
+        <input class="dan hidden" type="text" id="inputs" name="domain" placeholder="输入域名"/>
+        <input type="button" id="query" value="查询" style="margin-left: 10px;"/>
+    </div>
+</form>
+<div id="loader" class="loader hidden"></div>
+<div id="put" class="query-results"></div>
+<script>
+    $(document).ready(function () {
+        function performQuery() {
+            $('#loader').removeClass('hidden');
+            var getDomain = $('#input').val();
+            var datas = {
+                domain: getDomain
+            };
+
+            $.ajax({
+                url: "whoistest.php",
+                type: "post",
+                data: datas,
+                success: function (result) {
+                    result = JSON.parse(result);
+                    for (var key in result) {
+                        if (result[key].result !== "200" && result[key].result != null) {
+                            alert(result[key].result);
+                            return;
+                        }
+                    }
+                    whoisPrint(result);
+                },
+                complete: function () {
+                    $('#loader').addClass('hidden');
+                }
+            });
+        }
+
+        function bindEventListeners() {
+            $("#query").click(function () {
+                performQuery();
+            });
+        }
+
+        function whoisPrint(result) {
+            const getName = {
+                "domain": "域名",
+                "domainCode": "域名代码",
+                "CreationDate": "创建日期",
+                "ExpiryDate": "到期时间",
+                "UpdatedDate": "更新时间",
+                "SponsoringRegistrar": "注册商",
+                "RegistrarURL": "注册商网址",
+                "Registrant": "注册人",
+                "DomainStatus": "域名状态",
+                "DNS": "DNS服务器",
+                "RegistrantContactEmail": "注册人邮箱"
+            };
+
+            const infoContainer = document.getElementById('put');
+            infoContainer.innerHTML = '';
+            const singleInfoContainer = document.createElement('div');
+
+            const table = document.createElement('table');
+            table.classList.add('info-table');
+            const caption = document.createElement('caption');
+            caption.innerHTML = "以下内容仅供参考，详情请查看最底下的原始whois信息";
+            table.appendChild(caption);
+            len = result.length;
+            for (var keys in result) {
+                if (len !== 1) {//单行数据的时候，竖着输出，多行是横着列出来的。
+                    caption.innerHTML = "以下内容仅供参考，详情请查询单个域名，看域名的原始whois信息";
+                    table.appendChild(caption);
+
+                    if (keys === "0"){
+                        let row = document.createElement('tr');
+                        for (var key in result[keys].main) {
+                            name = getName[key] !== undefined ? getName[key] : key;
+                            row.classList.add(key);
+                            const domainLabel = document.createElement('th');
+                            domainLabel.innerHTML = name;
+                            row.appendChild(domainLabel);
+
+                        }
+                        table.appendChild(row);
+                    }
+
+                    row = document.createElement('tr');
+                    for (var key in result[keys].main) {
+                        const domainValue = document.createElement('td');
+                        domainValue.innerHTML = result[keys].main[key];
+                        row.appendChild(domainValue);
+                    }
+                    table.appendChild(row);
+
+                } else {
+                    for (var key in result[keys].main) {
+                        if (result[keys].main[key] === "404" || result[keys].main[key] == "")
+                            continue;
+                        name = getName[key] !== undefined ? getName[key] : key;
+
+                        const row = document.createElement('tr');
+                        row.classList.add(key);
+                        const domainLabel = document.createElement('th');
+                        domainLabel.innerHTML = name;
+                        row.appendChild(domainLabel);
+
+                        const domainValue = document.createElement('td');
+                        domainValue.innerHTML = result[keys].main[key];
+                        row.appendChild(domainValue);
+
+                        table.appendChild(row);
+                    }
+
+                    const row = document.createElement('tr');
+                    row.classList.add(key);
+                    const domainLabel = document.createElement('th');
+                    domainLabel.innerHTML = "whois原始信息";
+                    row.appendChild(domainLabel);
+
+                    const domainValue = document.createElement('td');
+                    domainValue.innerHTML = result[keys].whois;
+                    row.appendChild(domainValue);
+
+                    table.appendChild(row);
+
+                    //下面这个注释起来的有点问题，就先注释着吧
+                    // if (result[keys].main.domain === result[keys].main.domainCode) {
+                    //     document.getElementsByClassName("domainCode")[0].style.display = "none";
+                    // }
+                }
+                singleInfoContainer.appendChild(table);
+                infoContainer.appendChild(singleInfoContainer);
+            }
+        }
+
+        bindEventListeners();
+    });
+</script>
+</body>
+
+</html>
