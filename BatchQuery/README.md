@@ -8,6 +8,53 @@
 
 有能力的大佬们，也可以在此基础上创作美化。欢迎各位提交代码！
 
+### whois.php返回的json格式，可以当api使用。自己写前端页面。把data.json和whois.php放到服务器，就可以api调用！！！
+
+批量查询时候，默认不返回whois查询信息的原始数据，因为数据量太大。如果需要返回，自行在whois.php文件底部修改一下，已经备注位置修改方法
+
+``` json
+[
+{
+"main":{
+"domain":"查询的域名",
+"domainCode":"IDN域名的code编码。非IDN域名返回和域名一样",
+"CreationDate":"创建时间",
+"ExpiryDate":"到期时间",
+"UpdatedDate":"更新日期",
+"SponsoringRegistrar":"注册商",
+"RegistrarURL":"注册商网址",
+"Registrant":"注册人",
+"DomainStatus":"域名状态",
+"DNS":"dns服务器",
+"DNSSEC":"unsigned",
+"RegistrantContactEmail":"注册人邮箱号",
+"unregistered":"如果404则已经注册，未注册返回的是'未注册'三个字"
+},
+"result":"状态，200正常，其他都是直接把对应错误返回，是字符串",
+"whois":"whois原始信息，批量查询时候，默认不返回数据" 
+},
+{
+"main":{
+"domain":"查询的域名",
+"domainCode":"IDN域名的code编码。非IDN域名返回和域名一样",
+"CreationDate":"创建时间",
+"ExpiryDate":"到期时间",
+"UpdatedDate":"更新日期",
+"SponsoringRegistrar":"注册商",
+"RegistrarURL":"注册商网址",
+"Registrant":"注册人",
+"DomainStatus":"域名状态",
+"DNS":"dns服务器",
+"DNSSEC":"unsigned",
+"RegistrantContactEmail":"注册人邮箱号",
+"unregistered":"如果404则已经注册，未注册返回的是'未注册'三个字"
+},
+"result":"状态，200正常，其他都是直接把对应错误返回，是字符串",
+"whois":"whois原始信息，批量查询时候，默认不返回数据"
+}
+]
+```
+
 ### 单个查询图
 ![](https://cdnjson.com/images/2023/07/18/whois.png)
 
