@@ -4,13 +4,17 @@ whois查询，可以查询任意后缀域名。
 
 这个是单个域名查询，如需多域名查询请下载BatchQuery文件夹，BatchQuery文件夹内的是批量查询代码。
 
+Whois query, can query any suffix domain name.
+
+This is a single domain name query. If you need multiple domain name queries, please download the BatchQuery folder, which contains the batch query code.
+
 使用方法：
 
-下载代码，运行index.html页面，输入域名查询即可，临时写的，没写批量查询等等。
+下载代码，运行index.html页面，输入域名查询即可，批量查询进入BatchQuery文件夹内查看。
 
 请求改成ajax方法。可以前后端分离开。
 
-php的代码运行方法很简单。
+php的代码运行方法很简单，使用小皮，宝塔等类似集成环境即可使用。
 
 注意：
 
@@ -33,7 +37,7 @@ RegistrantContactEmail   注册人邮箱
 unregistered             未注册
 ```
 
-whois.php文件返回类型，可以当api使用。自己写前端页面。把data.json和whois.php放到服务器，就可以api调用！！！
+### whois.php文件返回类型，可以当api使用。自己写前端页面。把data.json和whois.php放到服务器，就可以api调用！！！
 
 ``` json
 // 返回是404的就是没查到。看原始whois信息。
