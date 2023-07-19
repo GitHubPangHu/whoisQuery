@@ -181,6 +181,21 @@ class Whois
         $a = array();
         foreach($domainArray as $value){
             if ($value === "")continue;
+             //start
+            //代码实现功能，判断域名是否有http或者https前缀（即网址），没有加上，再取域名。有就直接取域名
+            if (!preg_match("~^(?:f|ht)tps?://~i", $value)) {
+                $value = "http://" . $value;
+            }
+
+            $parsedUrl = parse_url($value);
+
+            if ($parsedUrl && isset($parsedUrl['host'])) {
+                $value = $parsedUrl['host'];
+            }else{
+                $a[] = ['main' => "", 'result' => "域名输入错误",'whois'=>""];
+                continue;
+            }
+            //end
             $this->domain = $value;
             $suffix = ltrim(strstr($value, '.'), ".");
             $data = $this->getWhoisAddress($suffix);
