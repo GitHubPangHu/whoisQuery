@@ -127,6 +127,8 @@
     function performQuery() {
       $('#loader').removeClass('hidden');
       var getDomain = $('#input').val();
+      var getDomains = new URL(getDomain).hostname;//去除http/https网址前缀
+      $('#input').val(getDomains);
       var datas = {
         domain: getDomain
       };
