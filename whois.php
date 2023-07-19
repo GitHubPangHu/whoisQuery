@@ -17,10 +17,25 @@ if (empty($domain)) {
     echo json_encode(['result' => "输入值不正确"]);
     die();
 }
-$whoisQuery = new Whois();
-$whois = $whoisQuery->query($domain);
-echo $whois;
 
+//代码实现功能，判断域名是否有http或者https前缀（即网址），没有加上，再取域名。有就直接取域名
+if (!preg_match("~^(?:f|ht)tps?://~i", $domain)) {
+    $domain = "http://" . $domain;
+}
+
+$parsedUrl = parse_url($domain);
+
+if ($parsedUrl && isset($parsedUrl['host'])) {
+    $domain = $parsedUrl['host'];
+
+    $whoisQuery = new Whois();
+    $whois = $whoisQuery->query($domain);
+    echo $whois;
+
+} else {
+    echo "无效的域名";
+    die();
+}
 
 class Whois
 {
