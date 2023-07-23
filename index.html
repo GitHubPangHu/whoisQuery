@@ -127,8 +127,13 @@
     function performQuery() {
       $('#loader').removeClass('hidden');
       var getDomain = $('#input').val();
-      var getDomains = new URL(getDomain).hostname;//去除http/https网址前缀
-      $('#input').val(getDomains);
+      var Expression=/http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/;
+      var objExp=new RegExp(Expression);
+      if(objExp.test(getDomain)==true){
+          getDomain = new URL(getDomain).hostname;//去除http
+      }
+
+      $('#input').val(getDomain);
       var datas = {
         domain: getDomain
       };
