@@ -61,5 +61,5 @@
 ![](https://cdnjson.com/images/2023/07/18/whois.png)
 
 ### 批量查询
-![](https://cdnjson.com/images/2023/07/18/plwhois.png)
+![](https://raw.githubusercontent.com/GitHubPangHu/image/main/plwhois.png)
 
