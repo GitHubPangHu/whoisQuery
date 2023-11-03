@@ -204,4 +204,4 @@ class Whois
         return json_encode(['main' => $this->main, 'result' => "200", 'whois' => $whois]);
     }
 }
-//学习分支
+//xuexi分支
