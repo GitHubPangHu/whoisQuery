@@ -197,11 +197,10 @@ class Whois
     public function query($domain)
     {
         $this->domain = $domain;
-        $suffix = ltrim(strstr($domain, '.'), ".");
+        $suffix = ltrim(strstr($domain, '.'), ".");//获取域名后缀
         $data = $this->getWhoisAddress($suffix);
         $whoisServiceAddress = $this->intercept($data);
         $whois = $this->getDomainWhois($whoisServiceAddress, $domain);
         return json_encode(['main' => $this->main, 'result' => "200", 'whois' => $whois]);
     }
 }
-//xuexi分支
